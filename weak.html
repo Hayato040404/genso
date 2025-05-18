@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>苦手レッスン</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>苦手レッスン</h1>
+    <div id="quiz-box">
+      <p id="progress"></p>
+      <p class="question"><span id="question-text">H</span> は？</p>
+      <input type="text" id="answer" placeholder="答えを入力" autofocus>
+      <button id="submit">こたえる</button>
+      <p id="feedback"></p>
+    </div>
+    <button onclick="location.href='quiz.html'">通常クイズへ</button>
+  </div>
+
+  <script src="script.js"></script>
+  <script>const weakMode = true;</script>
+</body>
+</html>
