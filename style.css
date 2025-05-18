@@ -1,0 +1,49 @@
+body {
+  font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  background: #f0f4f8;
+  margin: 0;
+  padding: 20px;
+}
+.container {
+  max-width: 400px;
+  margin: auto;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+h1 {
+  font-size: 1.5em;
+  text-align: center;
+  color: #333;
+}
+.question {
+  font-size: 1.2em;
+  text-align: center;
+  margin: 20px 0;
+}
+input {
+  width: 100%;
+  padding: 10px;
+  font-size: 1em;
+  margin-bottom: 10px;
+}
+button {
+  width: 100%;
+  padding: 10px;
+  font-size: 1em;
+  background-color: #58cc02;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  margin-top: 5px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #46a402;
+}
+#feedback {
+  text-align: center;
+  margin-top: 10px;
+  font-weight: bold;
+}
