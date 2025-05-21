@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>元素記号クイズ - 復習モード付き</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .symbol {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #007bff;
+    }
+    input[type="text"] {
+      padding: 0.5rem;
+      font-size: 1rem;
+      width: 80%;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      margin: 0.2rem;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: gray;
+      cursor: default;
+    }
+    .feedback {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    .correct {
+      color: green;
+    }
+    .wrong {
+      color: red;
+    }
+    .progress {
+      background: #ddd;
+      height: 10px;
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+    .progress-bar {
+      background: #007bff;
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s;
+    }
+    .progress-text {
+      font-size: 0.9rem;
+      margin-top: -0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>元素記号クイズ（1〜40）</h1>
+    <div id="progress" class="progress">
+      <div id="progressFill" class="progress-bar"></div>
+    </div>
+    <div id="progressText" class="progress-text">0 / 40 問完了</div>
+    <div class="symbol" id="symbol">H</div>
+    <input type="text" id="answer" placeholder="日本語名を入力" autocomplete="off">
+    <br>
+    <button onclick="checkAnswer()">答える</button>
+    <button id="reviewButton" onclick="startReview()" style="display:none;">復習モードへ</button>
+    <div id="feedback" class="feedback"></div>
+  </div>
+
+  <script>
+    const elements = [
+      {symbol: "H", name: "水素", hint: "HはHydrogen。水（H₂O）の元！"},
+      {symbol: "He", name: "ヘリウム", hint: "風船に使う軽いガス！"},
+      {symbol: "Li", name: "リチウム", hint: "リチウム電池に使われる"},
+      {symbol: "Be", name: "ベリリウム", hint: "ベリーっぽい名前で覚えよう"},
+      {symbol: "B", name: "ホウ素", hint: "Boron → 防炎ガラスに使われる"},
+      {symbol: "C", name: "炭素", hint: "Carbon → 炭！鉛筆の芯"},
+      {symbol: "N", name: "窒素", hint: "空気の78%を占める"},
+      {symbol: "O", name: "酸素", hint: "Oxygen → 呼吸に必要！"},
+      {symbol: "F", name: "フッ素", hint: "フッ素入りハミガキに入ってる！"},
+      {symbol: "Ne", name: "ネオン", hint: "ネオン看板で有名"},
+      {symbol: "Na", name: "ナトリウム", hint: "ナ＝Naでそのまま！"},
+      {symbol: "Mg", name: "マグネシウム", hint: "花火で明るく光る！"},
+      {symbol: "Al", name: "アルミニウム", hint: "Al＝アルミ缶！"},
+      {symbol: "Si", name: "ケイ素", hint: "Silicon → 半導体！"},
+      {symbol: "P", name: "リン", hint: "Phosphorus → マッチに使う"},
+      {symbol: "S", name: "硫黄", hint: "温泉のにおい"},
+      {symbol: "Cl", name: "塩素", hint: "プールのにおい！"},
+      {symbol: "Ar", name: "アルゴン", hint: "空気中に1%、反応しにくい"},
+      {symbol: "K", name: "カリウム", hint: "バナナに多い栄養素"},
+      {symbol: "Ca", name: "カルシウム", hint: "骨の成分！"},
+      {symbol: "Sc", name: "スカンジウム", hint: "スカンジナビアから発見"},
+      {symbol: "Ti", name: "チタン", hint: "軽くて強い金属"},
+      {symbol: "V", name: "バナジウム", hint: "バナナではない！"},
+      {symbol: "Cr", name: "クロム", hint: "メッキに使われる"},
+      {symbol: "Mn", name: "マンガン", hint: "乾電池の材料"},
+      {symbol: "Fe", name: "鉄", hint: "フェンス＝鉄の柵"},
+      {symbol: "Co", name: "コバルト", hint: "コバルトブルーの色"},
+      {symbol: "Ni", name: "ニッケル", hint: "コインに使われる"},
+      {symbol: "Cu", name: "銅", hint: "電線に使われる"},
+      {symbol: "Zn", name: "亜鉛", hint: "サプリや金属に"},
+      {symbol: "Ga", name: "ガリウム", hint: "低温で溶ける金属"},
+      {symbol: "Ge", name: "ゲルマニウム", hint: "半導体に使われる"},
+      {symbol: "As", name: "ヒ素", hint: "毒として有名"},
+      {symbol: "Se", name: "セレン", hint: "カメラやコピー機に"},
+      {symbol: "Br", name: "臭素", hint: "においの強い液体"},
+      {symbol: "Kr", name: "クリプトン", hint: "光るガス（ネオンの仲間）"},
+      {symbol: "Rb", name: "ルビジウム", hint: "炎色反応で赤紫"},
+      {symbol: "Sr", name: "ストロンチウム", hint: "花火に使われる"},
+      {symbol: "Y", name: "イットリウム", hint: "Y＝イットリウム"},
+      {symbol: "Zr", name: "ジルコニウム", hint: "人工ダイヤの材料"},
+    ];
+
+    let mode = "main"; // "main" or "review"
+    let pool = [...elements];
+    let current = {};
+    let total = 0;
+    let mistakes = [];
+    let reviewIndex = 0;
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    shuffle(pool);
+
+    function nextQuestion() {
+      if (mode === "main" && total >= 40) {
+        document.getElementById("symbol").innerText = "🎉 終了！";
+        document.getElementById("feedback").innerHTML =
+          `間違えた数: ${mistakes.length}<br>`;
+        if (mistakes.length > 0) {
+          document.getElementById("reviewButton").style.display = "inline-block";
+        }
+        document.querySelector("button").disabled = true;
+        return;
+      }
+
+      if (mode === "review") {
+        if (reviewIndex >= mistakes.length) {
+          document.getElementById("symbol").innerText = "✅ 復習完了！";
+          document.getElementById("feedback").innerText = "";
+          document.querySelector("button").disabled = true;
+          return;
+        }
+        current = mistakes[reviewIndex];
+        reviewIndex++;
+        document.getElementById("progressText").innerText = `復習 ${reviewIndex} / ${mistakes.length}`;
+        document.getElementById("progressFill").style.width = `${(reviewIndex / mistakes.length) * 100}%`;
+      } else {
+        current = pool[total];
+        document.getElementById("progressText").innerText = `${total + 1} / 40 問完了`;
+        document.getElementById("progressFill").style.width = `${((total + 1) / 40) * 100}%`;
+      }
+
+      document.getElementById("symbol").innerText = current.symbol;
+      document.getElementById("answer").value = "";
+      document.getElementById("feedback").innerText = "";
+    }
+
+    function checkAnswer() {
+      const input = document.getElementById("answer").value.trim();
+      const feedback = document.getElementById("feedback");
+      if (input === current.name) {
+        feedback.innerText = "正解！🎯";
+        feedback.className = "feedback correct";
+      } else {
+        feedback.innerHTML = `不正解。正解は「${current.name}」<br><small>💡 ${current.hint}</small>`;
+        feedback.className = "feedback wrong";
+        if (mode === "main") mistakes.push(current);
+      }
+      if (mode === "main") {
+        total++;
+      }
+      setTimeout(nextQuestion, 2000);
+    }
+
+    function startReview() {
+      if (mistakes.length === 0) return;
+      mode = "review";
+      reviewIndex = 0;
+      document.getElementById("reviewButton").style.display = "none";
+      document.querySelector("button").disabled = false;
+      document.getElementById("progressFill").style.width = "0%";
+      document.getElementById("progressText").innerText = `復習 0 / ${mistakes.length}`;
+      nextQuestion();
+    }
+
+    nextQuestion();
+  </script>
+</body>
+</html>
